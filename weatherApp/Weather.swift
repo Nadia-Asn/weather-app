@@ -35,17 +35,10 @@ struct Wind: Codable{
 }
 
 struct Weather: Codable{
-    var id_weather: Int
-    var main_weather: String
-    var weather_desc: String
-    var weather_icon: String
-    
-    enum CodingKeys: String, CodingKey{
-        case id_weather = "id"
-        case main_weather = "main"
-        case weather_desc = "description"
-        case weather_icon = "icon"
-    }
+    var id: Int
+    var main: String
+    var description: String
+    var icon: String
 }
 
 struct Sys: Codable{
@@ -99,12 +92,13 @@ struct WeatherInformation: Codable {
     var base: String?
     var visibility: Int?
     var dt: Int?
-    var coord: Coord?
+    var coord: Coord
     var sys: Sys?
     var wind: Wind?
-    var clouds: Clouds?
-    var info: Info?
+    var clouds: Clouds
+    var info: Info
     var rain: Rain?
+    var weather: [Weather]
     
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
@@ -119,6 +113,7 @@ struct WeatherInformation: Codable {
         wind = try values.decode(Wind.self, forKey: .wind)
         clouds = try values.decode(Clouds.self, forKey: .clouds)
         info = try values.decode(Info.self, forKey: .info)
+        weather = try values.decode([Weather].self, forKey: .weather)
         if values.contains(.rain) {
             rain = try values.decode(Rain.self, forKey: .rain)
         } else {
@@ -140,7 +135,8 @@ struct WeatherInformation: Codable {
         case wind = "wind"
         case clouds = "clouds"
         case info = "main"
-        case rain = "rain"
+        case rain 
+        case weather
     }
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)

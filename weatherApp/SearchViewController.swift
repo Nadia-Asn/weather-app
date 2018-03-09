@@ -33,6 +33,10 @@ class SearchViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        //self.city.borderStyle = UIColor.darkGray
+        
+        
     }
     
     override func didReceiveMemoryWarning() {
@@ -72,7 +76,7 @@ class SearchViewController: UIViewController {
     func didGetWeather(weather: WeatherInformation) {
         DispatchQueue.main.async(){
             self.weatherInfo = weather
-            guard let weather = self.weatherInfo else{
+            guard self.weatherInfo != nil else{
                 return
             }
             self.performSegue(withIdentifier: "detailsView", sender: self)
@@ -119,6 +123,7 @@ class SearchViewController: UIViewController {
                 }else{
                     let decoder = JSONDecoder()
                     let decode = try decoder.decode(WeatherInformation.self, from: data)
+                    print( "toto" , decode.weather.description.debugDescription)
                     print ("json decoder : " , decode.code)
                     print( "type" , type(of: decode))
                     self.didGetWeather(weather: decode)
