@@ -67,7 +67,29 @@ struct Sys: Codable{
     
 }
 
+struct Info: Codable{
+    var temperature: Double?
+    var pressure: Int?
+    var humidity: Int?
+    var tmp_min: Double?
+    var tmp_max: Double?
+    
+    enum CodingKeys: String, CodingKey{
+        case temperature = "temp"
+        case pressure = "pressure"
+        case humidity = "humidity"
+        case tmp_min = "temp_min"
+        case tmp_max = "temp_max"
+    }
+}
 
+struct Rain: Codable{
+    var lastHours: Int?
+    
+    enum CodingKeys: String, CodingKey{
+        case lastHours = "3h"
+    }
+}
 
 
 struct WeatherInformation: Codable {
@@ -81,6 +103,8 @@ struct WeatherInformation: Codable {
     var sys: Sys?
     var wind: Wind?
     var clouds: Clouds?
+    var info: Info?
+    var rain: Rain?
     
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
@@ -94,6 +118,13 @@ struct WeatherInformation: Codable {
         sys = try values.decode(Sys.self, forKey: .sys)
         wind = try values.decode(Wind.self, forKey: .wind)
         clouds = try values.decode(Clouds.self, forKey: .clouds)
+        info = try values.decode(Info.self, forKey: .info)
+        if values.contains(.rain) {
+            rain = try values.decode(Rain.self, forKey: .rain)
+        } else {
+            rain = nil
+        }
+        
         
     }
     
@@ -108,28 +139,8 @@ struct WeatherInformation: Codable {
         case sys = "sys"
         case wind = "wind"
         case clouds = "clouds"
-    }
-    
-    
-    
-    mutating func decode(from decoder: Decoder) throws{
-        let values = try decoder.container(keyedBy: CodingKeys.self)
-        
-        self.code = try values.decode(Int.self, forKey: .code)
-        if(code == 170){
-            print ("error 170")
-        }else{
-            self.cityName = try values.decode(String.self, forKey: .cityName)
-            
-            self.base = try values.decode(String.self, forKey: .base)
-            self.visibility = try values.decode(Int.self, forKey: .visibility)
-            self.dt = try values.decode(Int.self, forKey: .dt)
-            
-            self.coord = try values.decode(Coord.self, forKey: .coord)
-            self.sys = try values.decode(Sys.self, forKey: .sys)
-            self.wind = try values.decode(Wind.self, forKey: .wind)
-            self.clouds = try values.decode(Clouds.self, forKey: .clouds)
-        }
+        case info = "main"
+        case rain = "rain"
     }
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
