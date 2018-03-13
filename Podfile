@@ -7,7 +7,7 @@ use_frameworks!
 inhibit_all_warnings!
 
 target 'weatherApp' do
-
+	pod 'RealmSwift'
 end
 
 post_install do |installer|

@@ -13,7 +13,7 @@ class SearchViewController: UIViewController {
     @IBOutlet weak var cityName: UILabel!
     @IBOutlet weak var city: UITextField!
     
-    var weatherInfo: WeatherInformation?
+    var weatherInfo: Weather?
     
     // API weather
     private let urlAPI = "http://api.openweathermap.org/data/2.5/weather"
@@ -73,7 +73,7 @@ class SearchViewController: UIViewController {
     }
     
     // Get weather returned data OK
-    func didGetWeather(weather: WeatherInformation) {
+    func didGetWeather(weather: Weather) {
         DispatchQueue.main.async(){
             self.weatherInfo = weather
             guard self.weatherInfo != nil else{
@@ -116,15 +116,16 @@ class SearchViewController: UIViewController {
                     return
                 }
                 
+                print ("coooosz : " ,weather["cod"])
                 if let cod = weather["cod"]  as? String ,  cod == "404" {
                     print("Not such a city")
                     self.alertInvalidCityName()
                     return
                 }else{
                     let decoder = JSONDecoder()
-                    let decode = try decoder.decode(WeatherInformation.self, from: data)
-                    print( "toto" , decode.weather.description.debugDescription)
-                    print ("json decoder : " , decode.code)
+                    let decode = try decoder.decode(Weather.self, from: data)
+                    print( "toto" , decode.cityName ?? "totototo")
+//                    print ("json decoder : " , decode.code)
                     print( "type" , type(of: decode))
                     self.didGetWeather(weather: decode)
                 }
