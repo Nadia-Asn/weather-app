@@ -39,9 +39,10 @@ class DetailsViewController: UIViewController {
             let city = City()
             city.name = cityReceived
             city.weather = weatherInfo
+            
             DBManager.sharedInstance.addCity(object: city)
             
-            var w = DBManager.sharedInstance.getCitiesFromDb()
+            let w = DBManager.sharedInstance.getCitiesFromDb()
             print( "nb cities : " , w.count )
             print ( "Favorite cities : " , w.description)
             
@@ -58,7 +59,6 @@ class DetailsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        print ( "description ======== ",  weatherInfo?.descriptif?.description)
         
         buttonState = "notSelected"
         cityName.text = cityReceived

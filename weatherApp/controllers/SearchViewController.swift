@@ -7,29 +7,26 @@
 //
 
 import UIKit
+import CoreLocation
 
-class SearchViewController: UIViewController {
+
+class SearchViewController: UIViewController, CLLocationManagerDelegate {
     
+    // Strorybord components
     @IBOutlet weak var cityName: UILabel!
     @IBOutlet weak var city: UITextField!
     
+    
     var weatherInfo: Weather?
+    
+    // Localisation
+    var locationManager = CLLocationManager()
+    var startLocation: CLLocation!
+    
     
     // API weather
     private let urlAPI = "http://api.openweathermap.org/data/2.5/weather"
     private let apiKey = "440641e20987cefb9bd803e6e48a9444"
-    
-    @IBAction func searchButtonTaped(_ sender: UIButton) {
-        
-        guard let text = city.text, !text.isEmpty else{
-            return
-        }
-        getWeatherByCity(city: city.text!)
-    }
-    
-    @IBAction func detailsButtonTaped(_ sender: UIButton) {
-        self.performSegue(withIdentifier: "detailsTable", sender: self)
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,6 +52,31 @@ class SearchViewController: UIViewController {
          controllerDet.cityNameReceived = self.city.text!
          }*/
     }
+    
+    @IBAction func searchButtonTaped(_ sender: UIButton) {
+        
+        guard let text = city.text, !text.isEmpty else{
+            return
+        }
+        getWeatherByCity(city: city.text!)
+    }
+    
+    @IBAction func detailsButtonTaped(_ sender: UIButton) {
+        self.performSegue(withIdentifier: "detailsTable", sender: self)
+    }
+    
+    @IBAction func geoLocalisationButtonTaped(_ sender: Any) {
+        
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startUpdatingLocation()
+        startLocation = nil
+        locationManager.delegate = self
+    }
+    
+    @IBAction func getFavoriteCitiesButtonTaped(_ sender: Any) {
+    }
+    
     
     // Get weather by city name
     func getWeatherByCity(city: String){
@@ -116,7 +138,6 @@ class SearchViewController: UIViewController {
                     return
                 }
                 
-                print ("coooosz : " ,weather["cod"])
                 if let cod = weather["cod"]  as? String ,  cod == "404" {
                     print("Not such a city")
                     self.alertInvalidCityName()
@@ -124,9 +145,6 @@ class SearchViewController: UIViewController {
                 }else{
                     let decoder = JSONDecoder()
                     let decode = try decoder.decode(Weather.self, from: data)
-                    print( "toto" , decode.cityName ?? "totototo")
-//                    print ("json decoder : " , decode.code)
-                    print( "type" , type(of: decode))
                     self.didGetWeather(weather: decode)
                 }
                 
@@ -138,6 +156,23 @@ class SearchViewController: UIViewController {
         }
         taskTest.resume()
         
+    }
+    
+    
+    
+    // Get user coordinates location
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let locValue: CLLocationCoordinate2D = manager.location?.coordinate else { return }
+        
+        print("locations = \(locValue.latitude) \(locValue.longitude)")
+        getWeatherByGeolocalisation(latitude: locValue.latitude, longitude: locValue.longitude)
+        //self.cloudLabel.text = locValue.latitude.description
+    }
+    
+    // Get weather by city name
+    func getWeatherByGeolocalisation(latitude: Double, longitude: Double){
+        let weatherRequestURL = NSURL(string: "\(urlAPI)?APPID=\(apiKey)&lat=\(latitude)&lon=\(longitude)")!
+        getWeather(weatherReq: weatherRequestURL)
     }
 }
 

@@ -24,7 +24,8 @@ class DBManager {
     
     func addCity(object: City)   {
         try! database.write {
-            database.add(object, update: true)
+            database.add(object)
+            //database.add(object, update: true)
             print("Added new city")
         }
     }
