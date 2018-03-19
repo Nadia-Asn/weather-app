@@ -75,6 +75,8 @@
 		10AF882C205C1EB90048DE28 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		10AF882E205C1EB90048DE28 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		10AF887E205FB1640048DE28 /* Book.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Book.swift; sourceTree = "<group>"; };
+		10AF888D206013CD0048DE28 /* weatherApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = weatherApp.entitlements; sourceTree = "<group>"; };
+		10AF888E206013DA0048DE28 /* weatherExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = weatherExtension.entitlements; sourceTree = "<group>"; };
 		46DFA7A1F3A5064B8E9DBB60 /* Pods-weatherApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-weatherApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-weatherApp/Pods-weatherApp.debug.xcconfig"; sourceTree = "<group>"; };
 		72819A99FA8B3544A5B40E9C /* Pods-weatherApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-weatherApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-weatherApp/Pods-weatherApp.release.xcconfig"; sourceTree = "<group>"; };
 		7B70C558648138748D27E17C /* Pods_weatherExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_weatherExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -127,6 +129,7 @@
 		101613732049589800286BFF /* weatherApp */ = {
 			isa = PBXGroup;
 			children = (
+				10AF888D206013CD0048DE28 /* weatherApp.entitlements */,
 				103077EE205971BD003D4C4D /* Service */,
 				108714BE20591D2300FE0EC4 /* DB */,
 				108714BD20591CD600FE0EC4 /* Model */,
@@ -179,6 +182,7 @@
 		10AF8828205C1EB80048DE28 /* weatherExtension */ = {
 			isa = PBXGroup;
 			children = (
+				10AF888E206013DA0048DE28 /* weatherExtension.entitlements */,
 				10AF8829205C1EB90048DE28 /* TodayViewController.swift */,
 				10AF882B205C1EB90048DE28 /* MainInterface.storyboard */,
 				10AF882E205C1EB90048DE28 /* Info.plist */,
@@ -265,7 +269,7 @@
 						CreatedOnToolsVersion = 9.0;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
-								enabled = 0;
+								enabled = 1;
 							};
 						};
 					};
@@ -273,7 +277,7 @@
 						CreatedOnToolsVersion = 9.0;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
-								enabled = 0;
+								enabled = 1;
 							};
 						};
 					};
@@ -576,10 +580,11 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 63QADM33SX;
+				CODE_SIGN_ENTITLEMENTS = weatherApp/weatherApp.entitlements;
+				DEVELOPMENT_TEAM = S54B7GCA38;
 				INFOPLIST_FILE = weatherApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = test.weatherApp;
+				PRODUCT_BUNDLE_IDENTIFIER = test.weatherApp2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -592,10 +597,11 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 63QADM33SX;
+				CODE_SIGN_ENTITLEMENTS = weatherApp/weatherApp.entitlements;
+				DEVELOPMENT_TEAM = S54B7GCA38;
 				INFOPLIST_FILE = weatherApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = test.weatherApp;
+				PRODUCT_BUNDLE_IDENTIFIER = test.weatherApp2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -606,10 +612,11 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = AE3A9ADDC288AAA5CB14A504 /* Pods-weatherExtension.debug.xcconfig */;
 			buildSettings = {
-				DEVELOPMENT_TEAM = 63QADM33SX;
+				CODE_SIGN_ENTITLEMENTS = weatherExtension/weatherExtension.entitlements;
+				DEVELOPMENT_TEAM = S54B7GCA38;
 				INFOPLIST_FILE = weatherExtension/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = test.weatherApp.weatherExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = test.weatherApp2.weatherExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 4.0;
@@ -621,10 +628,11 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = CFEA8375453398D41A5C306D /* Pods-weatherExtension.release.xcconfig */;
 			buildSettings = {
-				DEVELOPMENT_TEAM = 63QADM33SX;
+				CODE_SIGN_ENTITLEMENTS = weatherExtension/weatherExtension.entitlements;
+				DEVELOPMENT_TEAM = S54B7GCA38;
 				INFOPLIST_FILE = weatherExtension/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = test.weatherApp.weatherExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = test.weatherApp2.weatherExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 4.0;

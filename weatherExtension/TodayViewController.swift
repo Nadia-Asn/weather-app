@@ -18,11 +18,11 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         super.viewDidLoad()
         
         
-        print( "lklklklklk" , Book.sharedInstance.display())
-        widgetLabel.text = "toto : \(Book.sharedInstance.add(x: 1, y: 2))"
-//        let x = DBManager.sharedInstance.getCitiesFromDb()
-//        print ( "Cities in database : ")
-//        print ( x.description)
+//        print( "lklklklklk" , Book.sharedInstance.display())
+//        widgetLabel.text = "toto : \(Book.sharedInstance.add(x: 1, y: 2))"
+        let x = DBManager.sharedInstance.getCitiesFromDb()
+        print ( "Cities in database : ")
+        print ( x.description)
 //        let y = DBManager.sharedInstance.getCityByName(cityName: "oujda")
 //        guard y != nil else {
 //            return

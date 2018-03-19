@@ -15,13 +15,24 @@ class DBManager {
     static let   sharedInstance = DBManager()
     
     private init() {
-        database = try! Realm()
+        database = try! Realm(configuration: DBManager.getRealmConfiguration())
     }
     
     // Get all the cities from the DB
     func getCitiesFromDb() ->   Results<City> {
         let results: Results<City> =   database.objects(City.self)
         return results
+    }
+    
+    // Get Realm database configuration
+    static func getRealmConfiguration() -> Realm.Configuration{
+        let directory: NSURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.pictime.test2")! as NSURL
+        let realmPath = directory.appendingPathComponent("db.realm")
+        
+        var configuration = Realm.Configuration()
+        configuration.fileURL = realmPath
+        
+        return configuration
     }
     
     // Insert the city given in paramater in the DB
