@@ -9,6 +9,9 @@ inhibit_all_warnings!
 target 'weatherApp' do
 	pod 'RealmSwift'
 end
+target 'weatherExtension' do
+    pod 'RealmSwift'
+end
 
 post_install do |installer|
     installer.pods_project.targets.each do |target|

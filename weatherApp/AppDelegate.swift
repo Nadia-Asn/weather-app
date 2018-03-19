@@ -16,7 +16,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        
+//        let directory: NSURL = NSFileManager.defaultManager().containerURLForSecurityApplicationGroupIdentifier("group.weatherApp")!
+//        let realmPath = directory.path!.stringByAppendingPathComponent("db.realm")
+//        RLMRealm.setDefaultRealmPath(realmPath)
         
         return true
     }

@@ -38,6 +38,7 @@ class SearchViewController: UIViewController, CLLocationManagerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        print ( "Cities in Database : ", "\(DBManager.sharedInstance.getCitiesFromDb())".description)
         // Initialize the map
         let initialLocation = CLLocation(latitude: 34.686667, longitude: -1.911389)
         centerMapOnLocation(location: initialLocation)

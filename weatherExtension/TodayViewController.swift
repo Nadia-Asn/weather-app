@@ -12,11 +12,23 @@ import NotificationCenter
 
 class TodayViewController: UIViewController, NCWidgetProviding {
     
-    var db = DBManager()
     
     @IBOutlet weak var widgetLabel: UILabel!
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
+        print( "lklklklklk" , Book.sharedInstance.display())
+        widgetLabel.text = "toto : \(Book.sharedInstance.add(x: 1, y: 2))"
+//        let x = DBManager.sharedInstance.getCitiesFromDb()
+//        print ( "Cities in database : ")
+//        print ( x.description)
+//        let y = DBManager.sharedInstance.getCityByName(cityName: "oujda")
+//        guard y != nil else {
+//            return
+//        }
+//
+//        print ( y.cityId)
         
         // Dispose of any resources that can be recreated.
          //       widgetLabel.text = "knkjkjmj"
