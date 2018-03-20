@@ -12,7 +12,6 @@ class CitiesTableViewController: UITableViewController {
     var weatherInfo: Weather?
     
     var x: String = ""
-    let database = DBManager.sharedInstance
     let cities = DBManager.sharedInstance.getCitiesFromDb()
     var dataSource: UITableViewDataSource?
     
@@ -29,7 +28,7 @@ class CitiesTableViewController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        tableView?.reloadData()   // ...and it is also visible here.
+        tableView?.reloadData()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

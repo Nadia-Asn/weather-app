@@ -11,10 +11,10 @@ import RealmSwift
 
 // Managing the DB : insert/delete/update ...
 class DBManager {
-    private var   database:Realm
+     var   database:Realm
     static let   sharedInstance = DBManager()
     
-    private init() {
+     init() {
         database = try! Realm(configuration: DBManager.getRealmConfiguration())
     }
     

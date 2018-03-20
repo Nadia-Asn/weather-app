@@ -9,10 +9,13 @@
 import UIKit
 import CoreLocation
 import MapKit
+import Realm
+import RealmSwift
 
 
 class SearchViewController: UIViewController, CLLocationManagerDelegate {
     
+    var notifToken: NotificationToken? = nil
     // MARK : MAP
     @IBOutlet weak var mapView: MKMapView!
     let regionRadius: CLLocationDistance = 1000000
@@ -20,6 +23,8 @@ class SearchViewController: UIViewController, CLLocationManagerDelegate {
     // MARK : Strorybord components
     @IBOutlet weak var cityName: UILabel!
     @IBOutlet weak var city: UITextField!
+    
+    //var notif = Notifications()
     
     // MARK: API
     let urlAPI = "http://api.openweathermap.org/data/2.5/weather"
@@ -37,13 +42,37 @@ class SearchViewController: UIViewController, CLLocationManagerDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
         
-        print ( "Cities in Database : ", "\(DBManager.sharedInstance.getCitiesFromDb())".description)
+        //print ( "Cities in Database : ", "\(DBManager.sharedInstance.getCitiesFromDb())".description)
         // Initialize the map
+//        DispatchQueue.global().async {
+//            self.notificationSetup()
+//        }
         let initialLocation = CLLocation(latitude: 34.686667, longitude: -1.911389)
         centerMapOnLocation(location: initialLocation)
         
         UserDefaults.init(suiteName: "group.weatherApp")?.setValue("Coucouc Nadia", forKey: "test1")
+    }
+    
+    func notificationSetup(){
+        _ = try! Realm()
+        
+        let xx = DBManager.sharedInstance.getCitiesFromDb()
+        
+        notifToken = xx.observe { [weak self] (changes: RealmCollectionChange) in
+            switch changes {
+            case .initial:
+                print ( " ------> initial ")
+                
+            case .update(_, let deletions, let insertions, let modifications):
+                print ("-----> del " , deletions.count)
+                print ("-----> inse " , insertions.count)
+                print ("-----> modi " , modifications.count)
+            case .error(let error):
+                fatalError("-----> \(error)")
+            }
+        }
     }
     
     

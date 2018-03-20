@@ -7,18 +7,18 @@
 //
 
 import UIKit
+import Realm
+import RealmSwift
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    var notifToken: NotificationToken? = nil
+    
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
-//        let directory: NSURL = NSFileManager.defaultManager().containerURLForSecurityApplicationGroupIdentifier("group.weatherApp")!
-//        let realmPath = directory.path!.stringByAppendingPathComponent("db.realm")
-//        RLMRealm.setDefaultRealmPath(realmPath)
         
         return true
     }
