@@ -9,13 +9,11 @@
 import Foundation
 
 class WeatherService{
-    
-    
+ 
     static func getWeather(url: NSURL, completion: @escaping (_ weather: Weather?, _ error: Error?) -> ()){
-        
 
-        
         let urlRequest = URLRequest( url: url as URL)
+        let decoder = JSONDecoder()
         
         // set up the session
         let config = URLSessionConfiguration.default
@@ -40,24 +38,22 @@ class WeatherService{
                 }
                 
                 if let cod = weather["cod"]  as? String ,  cod == "404" {
+                    completion(nil, error)
                     print("Not such a city")
-                    //self.alertInvalidCityName()
                     return
                 }else{
-                    let decoder = JSONDecoder()
                     let decode = try decoder.decode(Weather.self, from: data)
                     completion(decode, nil)
                 }
                 
             } catch  {
                 print("error decoding data")
+                completion(nil, error)
                 return
-                    completion(nil, error)
             }
         }
         taskTest.resume()
-        
     }
-
+    
 }
 

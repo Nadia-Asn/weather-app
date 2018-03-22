@@ -12,8 +12,7 @@ import MapKit
 import Realm
 import RealmSwift
 
-
-class SearchViewController: UIViewController, CLLocationManagerDelegate {
+class SearchViewController: UIViewController  {
     
     var notifToken: NotificationToken? = nil
     // MARK : MAP
@@ -23,104 +22,48 @@ class SearchViewController: UIViewController, CLLocationManagerDelegate {
     // MARK : Strorybord components
     @IBOutlet weak var cityName: UILabel!
     @IBOutlet weak var city: UITextField!
-    
-    //var notif = Notifications()
-    
-    // MARK: API
-    let urlAPI = "http://api.openweathermap.org/data/2.5/weather"
-    let apiKey = "440641e20987cefb9bd803e6e48a9444"
-    
-    // MARK : Service
-    var serviceWeather = WeatherService()
-    
+
     // MARK: Model
     var weatherInfo: Weather?
     
     // MARK : Localisation
     var locationManager = CLLocationManager()
     var startLocation: CLLocation!
+    let initialLocation = CLLocation(latitude: 34.686667, longitude: -1.911389)
+    
+    var cities = DBManager.sharedInstance.getCitiesFromDb()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        centerMapOnLocation(location: self.initialLocation)
+        getNotifications(cities: self.cities)
+        
+    }
 
+    override func viewWillAppear(_ animated: Bool) {
         
-        //print ( "Cities in Database : ", "\(DBManager.sharedInstance.getCitiesFromDb())".description)
-        // Initialize the map
-//        DispatchQueue.global().async {
-//            self.notificationSetup()
-//        }
-        let initialLocation = CLLocation(latitude: 34.686667, longitude: -1.911389)
-        centerMapOnLocation(location: initialLocation)
+        mapRemoveAnnotations()
+        mapAddAnnotations(cities: self.cities)
+        mapView.delegate = self
         
-        UserDefaults.init(suiteName: "group.weatherApp")?.setValue("Coucouc Nadia", forKey: "test1")
     }
     
-    func notificationSetup(){
-        _ = try! Realm()
+    override func viewDidAppear(_ animated: Bool) {
         
-        let xx = DBManager.sharedInstance.getCitiesFromDb()
-        
-        notifToken = xx.observe { [weak self] (changes: RealmCollectionChange) in
-            switch changes {
-            case .initial:
-                print ( " ------> initial ")
-                
-            case .update(_, let deletions, let insertions, let modifications):
-                print ("-----> del " , deletions.count)
-                print ("-----> inse " , insertions.count)
-                print ("-----> modi " , modifications.count)
-            case .error(let error):
-                fatalError("-----> \(error)")
-            }
-        }
     }
-    
-    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
-    
+        
+    // MARK: Segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
         if segue.identifier == "detailsView"{
-            let detailsController = segue.destination as! DetailsViewController
-            detailsController.cityReceived = self.city.text!
-            detailsController.weatherInfo = self.weatherInfo
+            redirectToDetailsView(segue: segue)
+
         }else if segue.identifier == "favoriteCities"{
-            let controllerDet = segue.destination as! CitiesTableViewController
-            controllerDet.x = self.city.text!
-        }else if segue.identifier == "displayMap"{
-            _ = segue.destination as! MapViewController
-        }
-    }
-    
-    @IBAction func displayMapTaped(_ sender: UIButton) {
-        self.performSegue(withIdentifier: "displayMap", sender: self)
-    }
-    
-    
-    @IBAction func searchButtonTaped(_ sender: UIButton) {
-        // API weather contantes
-        
-        guard let text = city.text, !text.isEmpty else{
-            return
-        }
-        
-        guard let weatherRequestURL = NSURL(string: "\(urlAPI)?APPID=\(apiKey)&q=\(text)") else{
-            return
-        }
-        
-        WeatherService.getWeather(url: weatherRequestURL) { (weather, error) in
-            self.weatherInfo = weather
-            guard self.weatherInfo != nil else{
-                print(error ?? "No Error" )
-                return
-            }
-            DispatchQueue.main.async(){
-                self.performSegue(withIdentifier: "detailsView", sender: self)
-                
-                print(weather ?? "no Data")
-            }
+            redirectToCitiesTableView(segue: segue)
         }
     }
     
@@ -128,30 +71,97 @@ class SearchViewController: UIViewController, CLLocationManagerDelegate {
         self.performSegue(withIdentifier: "detailsTable", sender: self)
     }
     
+    @IBAction func searchButtonTaped(_ sender: UIButton) {
+        
+        guard let cityName = self.city.text else{
+            return
+        }
+        requestServiceByCityName(cityName: cityName)
+    }
+
     @IBAction func geoLocalisationButtonTaped(_ sender: UIButton) {
         DispatchQueue.main.async {
-            self.locationManager.requestWhenInUseAuthorization()
-            if CLLocationManager.locationServicesEnabled() {
-                self.locationManager.delegate = self
-                self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
-                self.locationManager.startUpdatingLocation()
+            self.setUpGeaolocation()
+        }
+    }
+
+    @IBAction func favoriteCitiesButtonTaped(_ sender: Any) {
+        self.performSegue(withIdentifier: "favoriteCities", sender: self)
+    }
+    
+    func redirectToDetailsView(segue: UIStoryboardSegue){
+        let detailsController = segue.destination as! DetailsViewController
+        detailsController.cityReceived = self.city.text!
+        detailsController.weatherInfo = self.weatherInfo
+    }
+    
+    func redirectToCitiesTableView(segue: UIStoryboardSegue){
+        let controllerDet = segue.destination as! CitiesTableViewController
+        controllerDet.x = self.city.text!
+    }
+    
+    
+    /// Get notification when the Realm database was changed
+    ///
+    /// - Parameter cities: Collection of the current cities in database
+    func getNotifications(cities: Results<City>){
+        self.notifToken = cities.observe { changes in
+            switch changes {
+            case .initial:
+                print ( " ---> initial ")
+            case .update:
+                print ("---> database updated")
+            case .error(let error):
+                fatalError("---> \(error)")
             }
         }
     }
     
-    @IBAction func getFavoriteCitiesButtonTaped(_ sender: Any) {
-        self.performSegue(withIdentifier: "favoriteCities", sender: self)
+    func requestServiceByCityName(cityName: String){
+        WeatherRequestService.getWeather(params: ["q" : cityName]) { (weather, error) in
+            self.weatherInfo = weather
+            
+            guard self.weatherInfo != nil else{
+                return
+            }
+            DispatchQueue.main.async(){
+                self.performSegue(withIdentifier: "detailsView", sender: self)
+            }
+        }
     }
     
+    ///  get the weather information of a city using the coordinates of given in parameters
+    ///
+    /// - Parameters:
+    ///   - x: latitude coordinate
+    ///   - y: longitude coordinate
+    func requestServiceByCoordinate(x: Double, y: Double){
+        WeatherRequestService.getWeather(params: ["lat" : String(x) , "lon" : String(y)]) { (weather, error) in
+            self.weatherInfo = weather
+            
+            guard self.weatherInfo != nil else{
+                return
+            }
+            DispatchQueue.main.async(){
+                self.performSegue(withIdentifier: "detailsView", sender: self)
+            }
+        }
+    }
     
     // Centre the map & make favorites cities on it
     func centerMapOnLocation(location: CLLocation) {
         let coordinateRegion = MKCoordinateRegionMakeWithDistance(location.coordinate,regionRadius, regionRadius)
         mapView.setRegion(coordinateRegion, animated: true)
         
-        // show favorite cities on the map
-        let listCities = DBManager.sharedInstance.getCitiesFromDb()
-        for i in listCities{
+    }
+
+    
+    func mapRemoveAnnotations(){
+        self.mapView.removeAnnotations(mapView.annotations)
+    }
+    
+    func mapAddAnnotations(cities: Results<City>){
+        for i in cities{
             let latitude = i.weather?.coord?.lat
             let longitude = i.weather?.coord?.lon
             let name = i.weather?.cityName
@@ -159,67 +169,30 @@ class SearchViewController: UIViewController, CLLocationManagerDelegate {
                                   coordinate: CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!))
             
             mapView.addAnnotation(cityMap)
-            mapView.selectAnnotation(cityMap, animated: true)
         }
-        print ( "All favorite cities : " , listCities.description)
     }
-    //
-    //    // Fetch for the favorite cities in database and make it on the map
-    //    func makeFavoriteCitiesOnTheMap(){
-    //        let listCities = DBManager.sharedInstance.getCitiesFromDb()
-    //        for i in listCities{
-    //            let latitude = i.weather?.coord?.lat
-    //            let longitude = i.weather?.coord?.lon
-    //            let name = i.weather?.cityName
-    //            let cityMap = CityMap(title: name!,
-    //                                  coordinate: CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!))
-    //
-    //            mapView.addAnnotation(cityMap)
-    //            mapView.selectAnnotation(cityMap, animated: true)
-    //        }
-    //        print ( "All favorite cities : " , listCities.description)
-    //    }
-    //
+
     
-    // Showing alert when city name is invalid
-    func alertInvalidCityName(){
-        DispatchQueue.main.async() {
-            let alert = UIAlertController(title: "invalid city name", message: "please enter a valid city name !", preferredStyle: UIAlertControllerStyle.alert)
-            
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-            self.present(alert, animated: true, completion: nil)
-        }
-    }
+}
+
+extension SearchViewController: CLLocationManagerDelegate {
     
     // Get user coordinates location
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let locValue: CLLocationCoordinate2D = manager.location?.coordinate else {
-            return }
         
-        print("locations = \(locValue.latitude) \(locValue.longitude)")
-        let lat = locValue.latitude
-        let long = locValue.longitude
+        guard let locValue: CLLocationCoordinate2D = manager.location?.coordinate else {return }
         
-        toto(x: lat, y: long)
+        requestServiceByCoordinate(x: locValue.latitude, y: locValue.longitude)
         self.locationManager.stopUpdatingLocation()
     }
     
-    func toto(x: Double, y: Double){
-        guard let weatherRequestURL = NSURL(string: "\(urlAPI)?APPID=\(apiKey)&lat=\(x)&lon=\(y)") else {
-            return
-        }
-        
-        WeatherService.getWeather(url: weatherRequestURL) { (weather, error) in
-            self.weatherInfo = weather
-            guard self.weatherInfo != nil else{
-                print ("Error !!")
-                return
-            }
-            DispatchQueue.main.async {
-                self.performSegue(withIdentifier: "detailsView", sender: self)
-            }
+    func setUpGeaolocation(){
+        self.locationManager.requestWhenInUseAuthorization()
+        if CLLocationManager.locationServicesEnabled() {
+            self.locationManager.delegate = self
+            self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
+            self.locationManager.startUpdatingLocation()
         }
     }
 }
-
 

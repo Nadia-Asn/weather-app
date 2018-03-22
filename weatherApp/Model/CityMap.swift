@@ -9,6 +9,8 @@
 import Foundation
 import MapKit
 
+
+/// Object used to represente a city as an annotation
 class CityMap: NSObject, MKAnnotation {
     let title: String?
     let coordinate: CLLocationCoordinate2D

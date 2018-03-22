@@ -31,22 +31,17 @@ class DetailsViewController: UIViewController {
     
     var buttonState = ""
     
-    // MARK: API
-    let urlAPI = "http://api.openweathermap.org/data/2.5/weather"
-    let apiKey = "440641e20987cefb9bd803e6e48a9444"
-    
-    
     @IBAction func favoriteButtonTaped(_ sender: UIButton) {
         
         if self.buttonState == "notSelected"{
-            addFavoriteCity()
+            addFavoriteCityInDB()
         }else if self.buttonState == "selected"{
-            deleteFavoriteCity()
+            deleteFavoriteCityFromDB()
         }
     }
     
     // Add the favorite city in DB
-    func addFavoriteCity(){
+    func addFavoriteCityInDB(){
         favoriteButton.setImage( UIImage(named: "starRempli"), for: .normal)
         let city = City()
         city.name = (self.weatherInfo?.cityName)!
@@ -58,7 +53,7 @@ class DetailsViewController: UIViewController {
     }
     
     // Delete the city from the favorite city in DB
-    func deleteFavoriteCity(){
+    func deleteFavoriteCityFromDB(){
         self.favoriteButton.setImage( UIImage(named: "starVide"), for: .normal)
         let cityName = (self.weatherInfo?.cityName)!
         
@@ -69,21 +64,23 @@ class DetailsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.cityReceived = (self.weatherInfo?.cityName)!
         diplayWetherInformations()
-        
     }
     
-    // Display the weather information in the view
-    func diplayWetherInformations() {
-        if (DBManager.sharedInstance.cityExistedInDB(cityName: (self.weatherInfo?.cityName)!) == true){
-            print ( " =====> citie existante dans la DB " )
+    func setUpFavoriteImage(){
+        if (DBManager.sharedInstance.cityExistedInDB(cityName: cityReceived) == true){
             self.buttonState = "selected"
             self.favoriteButton.setImage( UIImage(named: "starRempli"), for: .normal)
         }else{
-            print ( " =====> citie non existante dans la DB " )
             self.buttonState = "notSelected"
             self.favoriteButton.setImage( UIImage(named: "starVide"), for: .normal)
         }
+    }
+
+    // Display the weather information in the view
+    func diplayWetherInformations() {
+        setUpFavoriteImage()
         self.cityName.text = weatherInfo?.cityName
         let tmpCelicius = (weatherInfo?.infoWeather?.temperature)! - 273.15
         self.temperature.text = "\(Int(round(tmpCelicius)))°"
@@ -107,14 +104,11 @@ class DetailsViewController: UIViewController {
             guard let city = self.weatherInfo?.cityName else{
                 return
             }
-            guard let weatherRequestURL = NSURL(string: "\(urlAPI)?APPID=\(apiKey)&q=\(city)") else{
-                return
-            }
-            
-            WeatherService.getWeather(url: weatherRequestURL) { (weather, error) in
+
+            WeatherRequestService.getWeather(params: ["q" : city]) { (weather, error) in
                 self.weatherInfo = weather
+                
                 guard self.weatherInfo != nil else{
-                    print ("Error !!")
                     return
                 }
             }

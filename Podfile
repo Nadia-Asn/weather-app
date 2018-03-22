@@ -8,9 +8,11 @@ inhibit_all_warnings!
 
 target 'weatherApp' do
 	pod 'RealmSwift'
+    pod 'Alamofire', '~> 4.7'
 end
 target 'weatherExtension' do
     pod 'RealmSwift'
+    pod 'Alamofire', '~> 4.7'
 end
 
 post_install do |installer|
