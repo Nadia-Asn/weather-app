@@ -29,16 +29,16 @@ class City: Object,Codable {
         case weather
     }
     
-    convenience init( name: String, weather: Weather) {
+    convenience init(name: String, weather: Weather) {
         self.init()
-        self.name = name
         self.weather = weather
+        self.name = name
     }
     
     convenience required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: cityCodingKeys.self)
-        let name = try container.decode(String.self, forKey: .name)
         let weather = try container.decode(Weather.self, forKey: .weather)
+        let name = try container.decode(String.self, forKey: .name)
         self.init(name: name, weather: weather)
     }
     
@@ -55,17 +55,12 @@ class City: Object,Codable {
     }
 }
 
-////////////////////////////////////////////////////////////////////
-
 /////////////////////////  WEATHER   //////////////////////////////
 
-
 //______________________Weather Model _________________________________//
-
-
 class Weather:Object, Codable {
     
-    @objc dynamic var cityName: String?
+    @objc dynamic var cityName: String = ""
     @objc dynamic var code: Int = 0
     @objc dynamic var visibility: Int = 0
     @objc dynamic var dt: Int = 0
@@ -74,8 +69,8 @@ class Weather:Object, Codable {
     @objc dynamic var wind: Wind?
     @objc dynamic var rain: Rain?
     @objc dynamic var clouds: CLouds?
-    @objc dynamic var coord: Coord?
-    var descriptif: [Descriptif]?
+    @objc dynamic var coord:  Coord?
+    var descriptif:  [Descriptif]?
     
     @objc dynamic var descript: String?
     

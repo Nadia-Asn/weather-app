@@ -14,68 +14,56 @@ import RealmSwift
 
 class SearchViewController: UIViewController  {
     
-    var notifToken: NotificationToken? = nil
     // MARK : MAP
+    
     @IBOutlet weak var mapView: MKMapView!
-    let regionRadius: CLLocationDistance = 1000000
+    let regionRadius: CLLocationDistance = CLLocationDistance(K.Initialisation.LocationMap.regionRadius)
     
     // MARK : Strorybord components
-    @IBOutlet weak var cityName: UILabel!
+    
     @IBOutlet weak var city: UITextField!
 
     // MARK: Model
+    
     var weatherInfo: Weather?
     
     // MARK : Localisation
+    
     var locationManager = CLLocationManager()
-    var startLocation: CLLocation!
-    let initialLocation = CLLocation(latitude: 34.686667, longitude: -1.911389)
+    let initialLocation = CLLocation(latitude: K.Initialisation.LocationMap.latitude, longitude: K.Initialisation.LocationMap.longitude)
+    
+    // MARK : BD
     
     var cities = DBManager.sharedInstance.getCitiesFromDb()
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        centerMapOnLocation(location: self.initialLocation)
-        getNotifications(cities: self.cities)
-        
-    }
 
     override func viewWillAppear(_ animated: Bool) {
-        
+        super.viewWillAppear(true)
+        centerMapOnLocation(location: self.initialLocation)
         mapRemoveAnnotations()
         mapAddAnnotations(cities: self.cities)
         mapView.delegate = self
-        
     }
+
+    ////////////////////////// Segue and Redirection //////////////////////////////
     
-    override func viewDidAppear(_ animated: Bool) {
-        
-    }
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-        
     // MARK: Segue
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
-        if segue.identifier == "detailsView"{
+        if segue.identifier == K.StoryBoardSegue.detail{
             redirectToDetailsView(segue: segue)
 
-        }else if segue.identifier == "favoriteCities"{
+        }else if segue.identifier == K.StoryBoardSegue.favoriteCities{
             redirectToCitiesTableView(segue: segue)
         }
     }
     
-    @IBAction func detailsButtonTaped(_ sender: UIButton) {
-        self.performSegue(withIdentifier: "detailsTable", sender: self)
-    }
-    
     @IBAction func searchButtonTaped(_ sender: UIButton) {
         
-        guard let cityName = self.city.text else{
+        guard let cityName = self.city.text else {
             return
         }
+        //!!!
         requestServiceByCityName(cityName: cityName)
     }
 
@@ -86,46 +74,33 @@ class SearchViewController: UIViewController  {
     }
 
     @IBAction func favoriteCitiesButtonTaped(_ sender: Any) {
-        self.performSegue(withIdentifier: "favoriteCities", sender: self)
+        self.performSegue(withIdentifier: K.StoryBoardSegue.favoriteCities, sender: self)
     }
     
     func redirectToDetailsView(segue: UIStoryboardSegue){
-        let detailsController = segue.destination as! DetailsViewController
-        detailsController.cityReceived = self.city.text!
-        detailsController.weatherInfo = self.weatherInfo
+        if let detailsController = segue.destination as? DetailsViewController {
+            detailsController.cityReceived = self.city.text!
+            detailsController.weatherInfo = self.weatherInfo
+        }
     }
     
     func redirectToCitiesTableView(segue: UIStoryboardSegue){
-        let controllerDet = segue.destination as! CitiesTableViewController
-        controllerDet.x = self.city.text!
-    }
-    
-    
-    /// Get notification when the Realm database was changed
-    ///
-    /// - Parameter cities: Collection of the current cities in database
-    func getNotifications(cities: Results<City>){
-        self.notifToken = cities.observe { changes in
-            switch changes {
-            case .initial:
-                print ( " ---> initial ")
-            case .update:
-                print ("---> database updated")
-            case .error(let error):
-                fatalError("---> \(error)")
-            }
+        if let favoriteController = segue.destination as? CitiesTableViewController {
+            favoriteController.cityName = self.city.text!
         }
     }
     
     func requestServiceByCityName(cityName: String){
-        WeatherRequestService.getWeather(params: ["q" : cityName]) { (weather, error) in
+                                                                                                            //!!!
+        WeatherRequestService.getWeather(params: [K.ServiceWeatherKeys.cityNameKey : cityName]) { (weather, error) in
             self.weatherInfo = weather
+            //!!! gestion error
             
             guard self.weatherInfo != nil else{
                 return
             }
             DispatchQueue.main.async(){
-                self.performSegue(withIdentifier: "detailsView", sender: self)
+                self.performSegue(withIdentifier: K.StoryBoardSegue.detail, sender: self)
             }
         }
     }
@@ -136,23 +111,22 @@ class SearchViewController: UIViewController  {
     ///   - x: latitude coordinate
     ///   - y: longitude coordinate
     func requestServiceByCoordinate(x: Double, y: Double){
-        WeatherRequestService.getWeather(params: ["lat" : String(x) , "lon" : String(y)]) { (weather, error) in
+        WeatherRequestService.getWeather(params: [K.ServiceWeatherKeys.latitudeKey : String(x) , K.ServiceWeatherKeys.longitudeKey : String(y)]) { (weather, error) in
             self.weatherInfo = weather
-            
+            //!!!
             guard self.weatherInfo != nil else{
                 return
             }
             DispatchQueue.main.async(){
-                self.performSegue(withIdentifier: "detailsView", sender: self)
+                self.performSegue(withIdentifier: K.StoryBoardSegue.detail, sender: self)
             }
         }
     }
     
     // Centre the map & make favorites cities on it
-    func centerMapOnLocation(location: CLLocation) {
+    func centerMapOnLocation(location: CLLocation, animated: Bool = true) {
         let coordinateRegion = MKCoordinateRegionMakeWithDistance(location.coordinate,regionRadius, regionRadius)
-        mapView.setRegion(coordinateRegion, animated: true)
-        
+        mapView.setRegion(coordinateRegion, animated: animated)
     }
 
     
@@ -161,19 +135,29 @@ class SearchViewController: UIViewController  {
     }
     
     func mapAddAnnotations(cities: Results<City>){
-        for i in cities{
-            let latitude = i.weather?.coord?.lat
-            let longitude = i.weather?.coord?.lon
-            let name = i.weather?.cityName
-            let cityMap = CityMap(title: name!,
-                                  coordinate: CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!))
-            
-            mapView.addAnnotation(cityMap)
+        var listAnotation = [CityMap]()
+        for city in cities{
+            if let latitude = city.weather?.coord?.lat, let longitude = city.weather?.coord?.lon, let name = city.weather?.cityName {
+                let cityMap = CityMap(title: name,
+                                      coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude))
+                listAnotation.append(cityMap)
+            }
+        }
+        mapView.addAnnotations(listAnotation)
+    }
+}
+
+
+
+extension SearchViewController: MKMapViewDelegate {
+    
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        if let annotation = view.annotation as? CityMap, let title = annotation.title{
+            requestServiceByCityName(cityName: title)
         }
     }
-
-    
 }
+
 
 extension SearchViewController: CLLocationManagerDelegate {
     
@@ -183,15 +167,18 @@ extension SearchViewController: CLLocationManagerDelegate {
         guard let locValue: CLLocationCoordinate2D = manager.location?.coordinate else {return }
         
         requestServiceByCoordinate(x: locValue.latitude, y: locValue.longitude)
-        self.locationManager.stopUpdatingLocation()
+        /**
+         only one location necesary
+         */
+        manager.stopUpdatingLocation()
     }
     
     func setUpGeaolocation(){
         self.locationManager.requestWhenInUseAuthorization()
         if CLLocationManager.locationServicesEnabled() {
-            self.locationManager.delegate = self
             self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
             self.locationManager.startUpdatingLocation()
+            self.locationManager.delegate = self
         }
     }
 }

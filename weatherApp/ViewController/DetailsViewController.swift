@@ -12,6 +12,8 @@ import RealmSwift
 
 class DetailsViewController: UIViewController {
     
+    // MARK : Strorybord components
+    
     @IBOutlet weak var cityName: UILabel!
     @IBOutlet weak var country: UILabel!
     @IBOutlet weak var weatherDescription: UILabel!
@@ -20,76 +22,83 @@ class DetailsViewController: UIViewController {
     @IBOutlet weak var wind: UILabel!
     @IBOutlet weak var humidity: UILabel!
     @IBOutlet weak var rain: UILabel!
-    
-    var realm: Realm!
-    
-    var weatherInfo: Weather?
-    
-    var cityReceived = ""
-    
     @IBOutlet weak var favoriteButton: UIButton!
     
-    var buttonState = ""
+    var realm: Realm! //!!! extension
+    var cityReceived = ""
+    var starState = ""
     
+    // MARK : Model
+    
+    var weatherInfo: Weather?
+
     @IBAction func favoriteButtonTaped(_ sender: UIButton) {
         
-        if self.buttonState == "notSelected"{
+        if self.starState == K.StarState.notSelected{
             addFavoriteCityInDB()
-        }else if self.buttonState == "selected"{
+        }else if self.starState == K.StarState.selected{
             deleteFavoriteCityFromDB()
         }
     }
     
     // Add the favorite city in DB
     func addFavoriteCityInDB(){
-        favoriteButton.setImage( UIImage(named: "starRempli"), for: .normal)
+        self.favoriteButton.setImage( UIImage(named: K.Image.imgStarFilled), for: .normal)
         let city = City()
         city.name = (self.weatherInfo?.cityName)!
         city.weather = self.weatherInfo
-        
         DBManager.sharedInstance.addCity(object: city)
-    
-        self.buttonState = "selected"
+        
+        self.starState = K.StarState.selected
     }
     
     // Delete the city from the favorite city in DB
     func deleteFavoriteCityFromDB(){
-        self.favoriteButton.setImage( UIImage(named: "starVide"), for: .normal)
-        let cityName = (self.weatherInfo?.cityName)!
+        self.favoriteButton.setImage( UIImage(named: K.Image.imgStarEmty), for: .normal)
+        let cityName = self.weatherInfo?.cityName
         
-        DBManager.sharedInstance.deleteCityByName(cityName: cityName)
+        DBManager.sharedInstance.deleteCityByName(cityName: cityName!)
         
-        self.buttonState = "notSelected"
+        self.starState = K.StarState.notSelected
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.cityReceived = (self.weatherInfo?.cityName)!
         diplayWetherInformations()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        setUpFavoriteImage()
+        self.cityReceived = (self.weatherInfo?.cityName)!
+    }
+    
     func setUpFavoriteImage(){
-        if (DBManager.sharedInstance.cityExistedInDB(cityName: cityReceived) == true){
-            self.buttonState = "selected"
-            self.favoriteButton.setImage( UIImage(named: "starRempli"), for: .normal)
+        if (DBManager.sharedInstance.cityExistedInDB(cityName: cityReceived)) {
+            self.starState = K.StarState.selected
+            self.favoriteButton.setImage( UIImage(named: K.Image.imgStarFilled), for: .normal)
         }else{
-            self.buttonState = "notSelected"
-            self.favoriteButton.setImage( UIImage(named: "starVide"), for: .normal)
+            self.starState = K.StarState.notSelected
+            self.favoriteButton.setImage( UIImage(named: K.Image.imgStarEmty), for: .normal)
         }
     }
 
+    
     // Display the weather information in the view
     func diplayWetherInformations() {
-        setUpFavoriteImage()
-        self.cityName.text = weatherInfo?.cityName
-        let tmpCelicius = (weatherInfo?.infoWeather?.temperature)! - 273.15
+        guard let weatherInfo = weatherInfo else {
+            return
+        }
+        //!!!!
+        self.cityName.text = weatherInfo.cityName
+        let tmpCelicius = (weatherInfo.infoWeather?.temperature)! - 273.15
         self.temperature.text = "\(Int(round(tmpCelicius)))°"
-        self.wind.text = "\(weatherInfo?.wind?.speed ?? 0.0) m/s"
-        self.humidity.text = "\(weatherInfo?.infoWeather?.humidity ?? 0) %"
-        self.cloudCover.text = "\(weatherInfo?.clouds?.clouds  ?? 0) %"
-        self.weatherDescription.text = weatherInfo?.descriptif?.first?.desc
+        self.wind.text = "\(weatherInfo.wind?.speed ?? 0.0) m/s"
+        self.humidity.text = "\(weatherInfo.infoWeather?.humidity ?? 0) %"
+        self.cloudCover.text = "\(weatherInfo.clouds?.clouds ?? 0) %"
+        self.weatherDescription.text = weatherInfo.descriptif?.first?.desc
         
-        guard let rainLastHours = weatherInfo?.rain?.lastHours else{
+        guard let rainLastHours = weatherInfo.rain?.lastHours else{
             self.rain.text = "no rain"
             return
         }
@@ -99,13 +108,11 @@ class DetailsViewController: UIViewController {
     // Update information when the phone is shaken
     override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
         if motion == .motionShake {
-            print (" Phone shaken ...")
             
             guard let city = self.weatherInfo?.cityName else{
                 return
             }
-
-            WeatherRequestService.getWeather(params: ["q" : city]) { (weather, error) in
+            WeatherRequestService.getWeather(params: [K.ServiceWeatherKeys.cityNameKey : city]) { (weather, error) in
                 self.weatherInfo = weather
                 
                 guard self.weatherInfo != nil else{
@@ -115,11 +122,6 @@ class DetailsViewController: UIViewController {
             diplayWetherInformations()
         }
     }
-    
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-    
 }
+
 

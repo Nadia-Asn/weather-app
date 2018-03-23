@@ -12,12 +12,12 @@ class WeatherRequestService{
     
     static func getWeather(params: [String:String], completion: @escaping (_ weather: Weather?, _ error: Error?) -> ()){
         
-        let urlComp = NSURLComponents(string: "http://api.openweathermap.org/data/2.5/weather")!
-        let apiKey = "440641e20987cefb9bd803e6e48a9444"
+        let urlComp = NSURLComponents(string: K.API.Weather.url)!
+        let apiKey = K.API.Weather.key
         
         var items = [URLQueryItem]()
         
-        items.append(URLQueryItem(name: "APPID", value: apiKey))
+        items.append(URLQueryItem(name: K.ServiceWeatherKeys.appId, value: apiKey))
         
         for(key, value) in params{
             items.append(URLQueryItem(name: key, value: value))
@@ -55,8 +55,12 @@ class WeatherRequestService{
                     print("Not such a city")
                     return
                 }else{
+                    //ConversorWeather.dataToWeather(data: data)
                     let decoder = JSONDecoder()
                     let decode = try decoder.decode(Weather.self, from: data)
+//                    ConversorWeather.dataToWeather(data: data, completion: { (weather, error) in
+//                        completion()
+//                    })
                     completion(decode, nil)
                 }
                 

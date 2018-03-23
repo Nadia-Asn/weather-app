@@ -17,6 +17,19 @@ let CellCityIdentifier = "CellCity"
  */
 class CellCity: UITableViewCell {
     
+    var city: City? = nil
+    
     @IBOutlet weak var cityName: UILabel!
     @IBOutlet weak var weatherDegree: UILabel!
+    
+    
+    
+    func configureCell() {
+        //TODO: update UI cell
+    }
+    
+    func configureAppereance()  {
+        //TODO: configure cell appareance 
+    }
+    
 }

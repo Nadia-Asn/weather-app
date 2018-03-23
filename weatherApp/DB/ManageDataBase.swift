@@ -11,17 +11,13 @@ import RealmSwift
 
 // Managing the DB : insert/delete/update ...
 class DBManager {
-     var   database:Realm
-    static let   sharedInstance = DBManager()
+    
+    var   database:Realm
+    
+    static let sharedInstance = DBManager()
     
      init() {
         database = try! Realm(configuration: DBManager.getRealmConfiguration())
-    }
-    
-    // Get all the cities from the DB
-    func getCitiesFromDb() ->   Results<City> {
-        let results: Results<City> =   database.objects(City.self)
-        return results
     }
     
     // Get Realm database configuration
@@ -35,8 +31,15 @@ class DBManager {
         return configuration
     }
     
+    // Get all the cities from the DB
+    func getCitiesFromDb() ->   Results<City> {
+        let results: Results<City> =   database.objects(City.self)
+        return results
+    }
+    
     // Insert the city given in paramater in the DB
     func addCity(object: City)   {
+        
         try! database.write {
             database.add(object)
             //database.add(object, update: true)

@@ -233,48 +233,12 @@
                         </connections>
                     </tableView>
                     <connections>
-                        <segue destination="dTu-4k-45P" kind="show" identifier="weatherFavoriteCity" id="KYR-WM-JRK"/>
+                        <segue destination="dTu-4k-45P" kind="show" identifier="detailsView" id="KYR-WM-JRK"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PVu-SK-45C" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="364" y="-933"/>
-        </scene>
-        <!--Map View Controller-->
-        <scene sceneID="FHL-3u-CDg">
-            <objects>
-                <viewController id="Pei-4b-iJF" customClass="MapViewController" customModule="weatherApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="Ele-Q1-dzR"/>
-                        <viewControllerLayoutGuide type="bottom" id="erd-z2-4U1"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="N2a-KC-OnE">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="oQS-C9-yQi">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="667" id="Rpm-hf-VOh"/>
-                                    <constraint firstAttribute="width" constant="375" id="lnJ-C0-wRV"/>
-                                </constraints>
-                            </mapView>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <constraints>
-                            <constraint firstItem="oQS-C9-yQi" firstAttribute="top" secondItem="N2a-KC-OnE" secondAttribute="top" id="HgI-qb-q88"/>
-                            <constraint firstAttribute="trailing" secondItem="oQS-C9-yQi" secondAttribute="trailing" id="Vba-ml-5cp"/>
-                            <constraint firstItem="erd-z2-4U1" firstAttribute="top" secondItem="oQS-C9-yQi" secondAttribute="bottom" id="YPD-Ps-uZ5"/>
-                            <constraint firstItem="oQS-C9-yQi" firstAttribute="leading" secondItem="N2a-KC-OnE" secondAttribute="leading" id="xkm-qB-btG"/>
-                        </constraints>
-                    </view>
-                    <connections>
-                        <outlet property="mapView" destination="oQS-C9-yQi" id="1Y2-8l-gna"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="QHi-iF-yWm" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1279" y="-170"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="DOW-5l-TPu">
@@ -407,7 +371,6 @@
                         <segue destination="MCq-Hv-1e1" kind="show" identifier="favoriteCities" id="EhP-Fu-64G">
                             <nil key="action"/>
                         </segue>
-                        <segue destination="Pei-4b-iJF" kind="show" identifier="displayMap" id="zrb-KV-Zcd"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Gye-13-zph" userLabel="First Responder" sceneMemberID="firstResponder"/>

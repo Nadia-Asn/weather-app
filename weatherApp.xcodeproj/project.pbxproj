@@ -17,6 +17,8 @@
 		106D61F92061718A008D050B /* CellCity.xib in Resources */ = {isa = PBXBuildFile; fileRef = 106D61F82061718A008D050B /* CellCity.xib */; };
 		106D61FB20617191008D050B /* CellCity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 106D61FA20617191008D050B /* CellCity.swift */; };
 		1079D1872059185600BE334A /* DetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1079D1862059185500BE334A /* DetailsViewController.swift */; };
+		1080FD2920641CEB00477229 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1080FD2820641CEB00477229 /* Constant.swift */; };
+		1080FD2D2065434200477229 /* ConversorWeather.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1080FD2C2065434200477229 /* ConversorWeather.swift */; };
 		108714B620591AA500FE0EC4 /* City.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108714B520591AA500FE0EC4 /* City.swift */; };
 		10AED1C0205ACAE7002D39E7 /* CityMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10AED1BF205ACAE7002D39E7 /* CityMap.swift */; };
 		10AF881F205C1D430048DE28 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10AF881E205C18CB0048DE28 /* SearchViewController.swift */; };
@@ -69,6 +71,8 @@
 		106D61F82061718A008D050B /* CellCity.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CellCity.xib; sourceTree = "<group>"; };
 		106D61FA20617191008D050B /* CellCity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellCity.swift; sourceTree = "<group>"; };
 		1079D1862059185500BE334A /* DetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailsViewController.swift; sourceTree = "<group>"; };
+		1080FD2820641CEB00477229 /* Constant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constant.swift; sourceTree = "<group>"; };
+		1080FD2C2065434200477229 /* ConversorWeather.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversorWeather.swift; sourceTree = "<group>"; };
 		108714B520591AA500FE0EC4 /* City.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = City.swift; sourceTree = "<group>"; };
 		10AED1BF205ACAE7002D39E7 /* CityMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityMap.swift; sourceTree = "<group>"; };
 		10AED1CA205BFBAC002D39E7 /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
@@ -133,8 +137,10 @@
 		101613732049589800286BFF /* weatherApp */ = {
 			isa = PBXGroup;
 			children = (
+				1080FD2A2064EE5100477229 /* Constantes */,
 				10AF888D206013CD0048DE28 /* weatherApp.entitlements */,
 				103077EE205971BD003D4C4D /* Service */,
+				1080FD2B2065431400477229 /* Conversor */,
 				108714BE20591D2300FE0EC4 /* DB */,
 				108714BD20591CD600FE0EC4 /* Model */,
 				108714B820591B0300FE0EC4 /* ViewController */,
@@ -152,6 +158,22 @@
 				10280FAF2063DA3C005BAB59 /* WeatherRequestService.swift */,
 			);
 			path = Service;
+			sourceTree = "<group>";
+		};
+		1080FD2A2064EE5100477229 /* Constantes */ = {
+			isa = PBXGroup;
+			children = (
+				1080FD2820641CEB00477229 /* Constant.swift */,
+			);
+			path = Constantes;
+			sourceTree = "<group>";
+		};
+		1080FD2B2065431400477229 /* Conversor */ = {
+			isa = PBXGroup;
+			children = (
+				1080FD2C2065434200477229 /* ConversorWeather.swift */,
+			);
+			path = Conversor;
 			sourceTree = "<group>";
 		};
 		108714B820591B0300FE0EC4 /* ViewController */ = {
@@ -436,6 +458,8 @@
 				10587AEC2061736000069E2F /* CellCity.swift in Sources */,
 				105755B32059196200AD846E /* ManageDataBase.swift in Sources */,
 				1079D1872059185600BE334A /* DetailsViewController.swift in Sources */,
+				1080FD2D2065434200477229 /* ConversorWeather.swift in Sources */,
+				1080FD2920641CEB00477229 /* Constant.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

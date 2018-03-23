@@ -6,52 +6,49 @@
 //  Copyright © 2018 Ahassouni, Nadia. All rights reserved.
 //
 import UIKit
+import RealmSwift
 
 class CitiesTableViewController: UITableViewController {
     
     var weatherInfo: Weather?
     
-    var x: String = ""
-    let cities = DBManager.sharedInstance.getCitiesFromDb()
+    var cityName: String = ""
+    var cities: Results<City>?
+    
     var dataSource: UITableViewDataSource?
-    
-    var sc: SearchViewController?
-    var scc = SearchViewController()
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        self.cities = DBManager.sharedInstance.getCitiesFromDb()
+
+        // TODO : utiliser CellCity par la suite
+        tableView.register(UINib.init(nibName: CellCityIdentifier, bundle: nil), forCellReuseIdentifier: CellCityIdentifier)
+
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: CellCityIdentifier) //!!!
     }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
+
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         tableView?.reloadData()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
-        if segue.identifier == "weatherFavoriteCity"{
-            let detailsController = segue.destination as! DetailsViewController
-            detailsController.weatherInfo = self.weatherInfo
+        if segue.identifier == K.StoryBoardSegue.detail{
+            redirectDetailsView(segue: segue)
         }
     }
     
-    
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.cities.count
+    func redirectDetailsView(segue: UIStoryboardSegue){
+        
+        if let detailsVC = segue.destination as? DetailsViewController{
+            detailsVC.weatherInfo = self.weatherInfo
+            detailsVC.cityReceived = (self.weatherInfo?.cityName)!
+        }
     }
     
-     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        
-        let index = indexPath.row
-        return setUpCellContent(indexCell: index, city: cities[index], cell: cell)
-     }
+    /// A mettre dans cityCell
     
     func setUpCellContent(indexCell: Int, city: City, cell: UITableViewCell) -> UITableViewCell{
         if indexCell % 2 == 0 {
@@ -66,22 +63,21 @@ class CitiesTableViewController: UITableViewController {
         }
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        guard let cityName = cities[indexPath.row].weather?.cityName else{
-            return
-        }
-        
-        WeatherRequestService.getWeather(params: ["q" : cityName]) { (weather, error) in
-            self.weatherInfo = weather
-            guard self.weatherInfo != nil else{
-                print ("Error !!")
-                return
-            }
-            DispatchQueue.main.sync {
-                self.performSegue(withIdentifier: "weatherFavoriteCity", sender: self)
 
-            }
-        }
+}
+
+extension CitiesTableViewController {
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return self.cities!.count
     }
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: CellCityIdentifier, for: indexPath) //!!! type ?
+        let cellIndex = indexPath.row
+        return setUpCellContent(indexCell: cellIndex, city: self.cities![cellIndex], cell: cell)
+    }
+    
+    
 }

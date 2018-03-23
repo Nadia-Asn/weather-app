@@ -12,8 +12,13 @@ import MapKit
 
 /// Object used to represente a city as an annotation
 class CityMap: NSObject, MKAnnotation {
+    
+    //MARK: - Properties
+    
     let title: String?
     let coordinate: CLLocationCoordinate2D
+    
+    //MARK: - init
     
     init(title: String , coordinate: CLLocationCoordinate2D) {
         self.title = title
